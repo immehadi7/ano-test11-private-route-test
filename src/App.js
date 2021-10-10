@@ -1,247 +1,159 @@
-import {  getAuth, signInWithPopup, GoogleAuthProvider , GithubAuthProvider ,  FacebookAuthProvider ,signOut, createUserWithEmailAndPassword , signInWithEmailAndPassword , sendEmailVerification} from "firebase/auth";
-import { useState } from "react";
+import {
+   getAuth, createUserWithEmailAndPassword , sendEmailVerification , signInWithEmailAndPassword ,sendPasswordResetEmail } from "firebase/auth";
+import { useState } from 'react';
 import './App.css';
-import initializeAuthenticaiton from './FireBase/firebase.initialize';
+import firebaseAuthentication from './firebase/firebase.init';
 
-initializeAuthenticaiton();
+firebaseAuthentication();
 
-const googleProvider = new GoogleAuthProvider();
-const gitHubProvider = new GithubAuthProvider();
-const fbProvider =  new FacebookAuthProvider();
+  
+
+
 
 
 function App() {
+  const [email , setEmail] = useState('')
+  const [password , setPassword] = useState('')
+  const [error , setError] = useState()
   const [user , setUser] = useState({})
-  const [error, setError] = useState('')
-  const [userEmail , setUserEmail] = useState('')
-  const [userPassword , setUserPassword] = useState('')
-  const [isLogin , setIsLogin] = useState(false)
+  const [toggle , setToggole] = useState(false);
   const auth = getAuth();
 
-  let handelGoogleSignIn =() =>{
-   
-    signInWithPopup(auth, googleProvider)
-    .then(result => {
-      const {displayName , email , photoURL} = result.user;
-        console.log(result.user)
-          const loggedInUser = {
-            name: displayName ,
-            email : email ,
-            photo : photoURL ,
-          };
-          setUser(loggedInUser);
-  }).catch(error =>{
-    console.log(error.message)
-  })
-
-  }
-
-    let handleGithubSignIn = () =>{
-      signInWithPopup(auth, gitHubProvider)
-  .then((result) => {
-        const {displayName, email , photoURL} = result.user;
-       console.log(result.user)
-        const loggedInUser = {
-          name: displayName ,
-          email: email,
-          photo : photoURL 
-        };
-        setUser(loggedInUser)
-  })
-    }
-    let handleFbsignIn =() =>{
-      signInWithPopup(auth, fbProvider)
-      .then(result => {
-        const {displayName , email , photoURL} = result.user;
-          console.log(result.user)
-            const loggedInUser = {
-              name: displayName ,
-              email : email ,
-              photo : photoURL ,
-            };
-            setUser(loggedInUser);
-    })
-    }
 
 
-
-
- let handleSignOut = () =>{
-  signOut(auth).then(() => {
-    // Sign-out successful.
-  })
- }
-    /* ----------google signin part end  ---------------------------------------------------------------------------------------------------- */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   
-
- let handleEmail = e => {
-   setUserEmail(e.target.value);
- }
- let handlePass = e => {
-   setUserPassword(e.target.value);
- }
-
-   let handleRegistration = () =>{
-    console.log(userEmail , userPassword);
-    if(userPassword.length< 6){
-      setError("Password must be 6 character");
-      
-    }
-    if(!/(?=.*[A-Z].*[A-Z])/.test('userPassword')){
-      setError('Please Add one upperCase latter for passoword');
-    
-    }
-    if( !/(?=.*[!@#$&*])/.test('userPassword')){
-      setError('Please Add one special character');
-        
-    }
-      if(isLogin){
-        processLogin(userEmail, userPassword)
-      }
-      else{
-        registerNewUser(userEmail, userPassword)
-      }
-    
-  }
-  let processLogin = ( userEmail , userPassword) =>{
-    signInWithEmailAndPassword(auth, userEmail, userPassword)
-      .then(result=>{
-        const user = result.user ;
-          console.log(user)
-          setError('')
-      }).catch(error=>{
-        setError(error.message)
-      })
-
-  }
   
-      let registerNewUser = (userEmail, userPassword) =>{
-        createUserWithEmailAndPassword(auth, userEmail, userPassword)
-        .then((result) => {
-          // Signed in 
-          const user = result.user;
-            console.log(user)
-              setError('')
-              verifyEmail()
-        }).catch((error) => {
-          setError(error.message);
-        }) 
-          /*   e.preventDefault();  */
-      }
-      let verifyEmail = () =>{
-        sendEmailVerification(auth.currentUser)
-          .then(result=>{
-            console.log(result)
-          })
-        
-      }
-      
-let handelToggole = e =>{
-    setIsLogin(e.target.checked);
-}
-  return (
+  let handlePassword = (e) =>{
+    setPassword(e.target.value);
 
+    /* 6 character kom hole error */
+    if( password.length < 6  ){
+      setError('please give 6 character')
+    }
 
-    <div className="App mx-5">
-    <form className="row g-3" onSubmit={handleRegistration}>
-      <h1 className='text-primary'> Please {isLogin ? 'Login' : 'Regeister Here'}  </h1>
-  <div className="col-md-6">
-    <label htmlFor="inputEmail4" className="form-label">Email</label>
-    <input type="email" className="form-control" id="inputEmail4" onBlur={handleEmail} required />
-  </div>
-  <div className="col-md-6">
-    <label htmlFor="inputPassword4" className="form-label">Password</label>
-    <input type="password" className="form-control" id="inputPassword4" onBlur={handlePass} required />
-  </div>
-  <div>
-    <label htmlFor="toggle">Already Registered?</label>
-    <input type="checkbox" name="toggle" id="" onClick={handelToggole} />
-  </div>
-    <div className="col-12"> {error} </div>
-  <div className="col-12">
-    <button type="submit" className="btn btn-primary"> {isLogin ? 'LogIn' : 'Registration'} </button>
-  </div>
-</form>
+    /* regex use kore password show kora  */
+   /*  if( !/(?=.*[A-Z].*[A-Z])/.test('password')){
+      setError("give 2 Uppercase character")
+    }
+    if(/(?=.*[!@#$&*]) /.test('password')){
+      setError('one special character please')
+    } */
+  }
     
+  let handleEmail = (e) =>{
+    setEmail(e.target.value);
+
+    
+  }
+  let handleSubmit = (e) =>{
+    e.preventDefault();
+    console.log(email , password) 
+    createUserWithEmailAndPassword(auth, email, password)
+  .then((result) => {
+    // Signed in 
+    const {email , displayName , photoURL} = result.user;
+      const userInfo ={
+        name: displayName ,
+        email: email ,
+        photo: photoURL 
+      };
+      setUser(userInfo);
+      verifyEmail(email)
+
+  }).catch((error) => {
+    setError(error.message);
+  });
+}
+
+/* ei handle login ta alada login component e diye dilei hobe ,,,,, ar tokhon onsubmit e {handleLogin bosailei hoye jabe In sha Allah} */
+let handelLogin = (e)  =>{
+  e.preventDefault();
+  signInWithEmailAndPassword(auth , email, password)
+  .then((result) => {
+    // Signed in 
+    const {email , displayName , photoURL} = result.user;
+      const userInfo ={
+        name: displayName ,
+        email: email ,
+        photo: photoURL 
+      };
+      setUser(userInfo);
+      setError('');
+
+  }).catch((error) => {
+    setError(error.message);
+  });
+ 
+}
+
+/* email verification part */
+let verifyEmail =(email) =>{
+  sendEmailVerification(auth , email)
+  .then(() => {
+    // Email verification sent!
+    // ...
+  });
+}
+
+/*  reset password with button handler  */
+let resetPassword =(email) =>{
+  sendPasswordResetEmail(auth, email)
+  .then(() => {
+    // Password reset email sent!
+    // ..
+  })
+}
 
 
+/* if(toggle){
+  handleSubmit(email, password)
+}
+else{
+  handelLogin(email, password)
+}
+ */
+    /* {
+      toggle ? 
+    } */
 
+  return (
+    <div className="container pt-5 mx-5">
+      <h1> {user.email} </h1>
+        <form onSubmit={handleSubmit} >
+        <div  className="mb-3"> 
+        {/* ternary operator and toggle part */}
+          <h1 className="text-primary" > {
+    toggle? 'Please Log in' : 'Please Register'
+  }  </h1>
+           </div>
+    <div className="mb-3">
+    <label htmlFor="exampleInputEmail1" className="form-label"  >Email address</label>
+    <input type="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" onBlur={handleEmail} />
+    <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
+    </div>
 
+    <div className="mb-3">
+    <label htmlFor="exampleInputPassword1" className="form-label">Password</label>
+    <input type="password" className="form-control" placeholder="Input Password" onBlur={handlePassword} />
+    </div>
 
+    <div className="mb-3 form-check">
+    <input type="checkbox" className="form-check-input" id="exampleCheck1" onClick={()=>setToggole(true)} />
+    <label className="form-check-label" htmlFor="exampleCheck1"> { toggle ? 'Log in' : "Already registration done" 
+    }</label>
+    </div>
+    <div className="mb-3"> 
+    <h1> {error} </h1>
+    </div>
+       {/* ternary operator and toggle part */}
+  <button type="submit" className="btn btn-primary"> {
+    toggle? 'Log in' : 'Register'
+  } </button>
+  <button onClick={resetPassword} > Reset PassWord </button>
+</form>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      <br />
-      <br />
-      <br />
-      <br />
-      <div>-----------------------------</div>
-      {
-        !user.name ?
-        <div>
-        <button onClick={handelGoogleSignIn}>Google sign in</button>
-        <button onClick={handleGithubSignIn} > gitHub SignIn </button>
-        <button onClick={handleFbsignIn}>Fb login</button>
-        </div>:
-        <div>
-        <button onClick={handleSignOut} >SignOut</button>
-      </div>
-      }
      
-      
-      <br />
-      <br />
-      {
-        user.name && <div>
-          <h1>Welcome Sir {user.name}</h1>
-          <h2>your email : {user.email} </h2>
-          <img src={user.photo}/*  width='100' height='50'  */alt="" />
-        </div>
-      }
     </div>
   );
 }
 
 export default App;
-
