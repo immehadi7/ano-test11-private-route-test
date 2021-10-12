@@ -1,10 +1,10 @@
 const firebaseConfig = {
-    apiKey: "AIzaSyAILflPTKA0SqEBMrI_RC4AmxU__mS8J5c",
-    authDomain: "email-authentication-a4373.firebaseapp.com",
-    projectId: "email-authentication-a4373",
-    storageBucket: "email-authentication-a4373.appspot.com",
-    messagingSenderId: "437985539758",
-    appId: "1:437985539758:web:7159910d7f127195d8df3f"
+    apiKey: "AIzaSyDlUrxsaaVPGojlrBtOFdn1qw-bQeHKcE8",
+    authDomain: "ano-test11.firebaseapp.com",
+    projectId: "ano-test11",
+    storageBucket: "ano-test11.appspot.com",
+    messagingSenderId: "899988882439",
+    appId: "1:899988882439:web:f945b52cce1994f3c1d6a2"
   };
 
-export default firebaseConfig ;
+export default firebaseConfig;
